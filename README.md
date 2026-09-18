@@ -77,6 +77,16 @@ permission that gates it, grouped by pack/division. A handful of routes needing 
 (a particular contract, a particular fiscal period) rather than a browsable index were left unvisited
 and are named plainly in both the video's own source list and the markdown file, not guessed at.
 
+**All 15 `-full` videos were re-recorded once**, after the first pass found every one of them opened
+with a brief "404 page not found" flash right after sign-in. Root cause: the local `vst-svc`'s
+`UNISTAX_CASDOOR_CALLBACK_URL` and the `shatadal-app` Casdoor Application's own registered
+`redirect_uris` both pointed the OAuth round trip at the bare backend origin (`localhost:9191`,
+which serves only `/erp.*` RPCs and `/auth/casdoor/*`, nothing at `/`) instead of the vite dev
+server (`localhost:9192`) that actually serves the SPA and already proxied `/auth/casdoor/*`
+through to 9191. Fixed by repointing both at 9192, so the whole flow, including the final
+post-login redirect, lands on a real page. The re-recording used the identical, mechanically
+derived route lists, so coverage and content are unchanged; only the login moment is different.
+
 ## Notes and known gaps, found while recording
 
 - **05, user video**: `procurement-officer` does not hold `proc.sourcing_event.post` (floating a
