@@ -65,16 +65,23 @@ screens they tour.
   so `/med/prescription/new` is denied; substituted the read-only `/med/prescription` index.
 - **17 (Transport)**: `/fleet/driver` is denied for both the `fleet-manager` persona and the `admin`
   persona used here — a real gap, not a swap-around choice.
-- **20/22 (Dispatch, Inventory)**: `/inv/dispatch` and `/inv/gate-pass` hard-fail with a real
+- **20/22 (Dispatch, Inventory)**: `/inv/dispatch` and `/inv/gate-pass` hard-failed with a real
   `query_not_a_reference` error in the generic query engine's entity definitions
   (`inv.dispatch.from_warehouse_id`, `inv.gate_pass.premises_org_unit_id`,
-  `inv.issue.to_org_unit_id`). Excluded from every video; not fixed.
-- **03 (e-Auction), admin video**: the "Approve disposal proposals" panel shows a real backend error,
-  `query_template_column: proc.disposal_proposal.row_version is an entity-template column...` — a
-  genuine bug in the generic query builder, left visible rather than cut since it isn't a denial.
-- **04 (Vendor Enlistment)**: the vendor-application list's row click is dead code —
-  `IndexPage.vue`'s `openRow` looks for an `id` column the query never requests, so `router.push`
-  never fires. Worked around by navigating to the real detail URL directly; not fixed.
+  `inv.issue.to_org_unit_id`). **Fixed** (`unistax/unistax@37d2d867f`, `unistax/design@fffdda8`):
+  all six columns were bare UUIDs with no `REFERENCES` clause in both the promoted migration and
+  the design source, despite every one of the three screens already assuming the reference. These
+  videos still route around the bug since they were recorded before the fix; the routes now work.
+- **03 (e-Auction), admin video**: the "Approve disposal proposals" panel showed a real backend
+  error, `query_template_column: proc.disposal_proposal.row_version is an entity-template
+  column...`. **Fixed** (`unistax/unistax@7208ea27e`): both approval panels requested `row_version`
+  on a browse-shaped query, which the query builder's own security rule refuses; now fetched via a
+  record-shaped query right before each approve action instead.
+- **04 (Vendor Enlistment)**: the vendor-application list's row click was dead code —
+  `IndexPage.vue`'s `openRow` looked for an `id` column the query never requested, so `router.push`
+  never fired. **Fixed** (`unistax/unistax@9d6488fcd`), and not just for this entity: `id` is now
+  always requested and always hidden from the grid, so the same dead click is fixed on all 625
+  affected generated index pages, not only this one.
 - **06 (Dashboards)**: `/reports/budget-vs-actual` does not exist in this repo (budget/GL reporting
   lives in the separate `accounting` app). Substituted the real `proc.tender_dashboard` report.
 - **23 (Others/Administrator)**: `/notify/webhook` and `/intg/message` are not real routes in
