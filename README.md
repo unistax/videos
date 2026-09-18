@@ -51,6 +51,32 @@ screens they tour.
 | `23-others-functional-module-administrator-*` | Others Functional Module (Administrator) | security-administrator |
 | `24-invoicing-payment-module-accounting-side-*` | Invoicing & Payment, accounting-side | dev@example.com (separate app) |
 
+## `officers/` — the full, uncapped workflow recordings
+
+The module-by-module recordings above tour a curated selection per RFP module. `officers/` holds a
+different, more exhaustive set: one video per named officer in `unistax/unistax`'s own
+`demo/sjibl/officers/*.md` roster, each one walking every real UI workflow that officer's ERP role
+can reach — not a curated top 20, every route their role's own permissions actually unlock,
+mechanically derived by cross-referencing `design-contract/ui/role-catalogue.json` against
+`web/src/router/screens.ts` and `entities.ts`, the identical logic the app's own router guard runs.
+801 real workflow routes total across the 15 officers, every one of them actually visited in a real,
+logged-in Casdoor session against this product's own dev instance (not a static list) before being
+recorded.
+
+Two file generations exist side by side in this folder for the same officer, kept distinct on
+purpose:
+
+| File | Contents |
+|---|---|
+| `NN-name.webm` (original, e.g. `01-md-farhan-kabir.webm`) | The officer's original curated top-20 walkthrough, recorded earlier |
+| `NN-name-full.webm` (e.g. `01-md-farhan-kabir-full.webm`) | Every real workflow that officer's role can reach, uncapped |
+
+The corresponding `demo/sjibl/officers/*.md` file in `unistax/unistax` is the authoritative,
+readable list behind each `-full` video — route, plain-English workflow name and the exact
+permission that gates it, grouped by pack/division. A handful of routes needing a specific record id
+(a particular contract, a particular fiscal period) rather than a browsable index were left unvisited
+and are named plainly in both the video's own source list and the markdown file, not guessed at.
+
 ## Notes and known gaps, found while recording
 
 - **05, user video**: `procurement-officer` does not hold `proc.sourcing_event.post` (floating a
