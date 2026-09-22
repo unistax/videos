@@ -18,6 +18,58 @@ a dev-auth "you are not signed in" state. Two of the infra pieces this required:
   `design-contract/ui/role-catalogue.json` role, so the "user" video per module is a real, narrowly-
   scoped staff login and the "admin" video is the tenant administrator.
 
+## `sjibl-demo-final.mp4` — the narrated, scored walkthrough
+
+Unlike every other video in this folder, this is not a per-module or per-officer tour: it is a
+single, continuous, narrated story (Google TTS) following `unistax/unistax`'s own
+`demo/sjibl/DEMO-RUN-SHEET.md` end to end, structured around the five things the RFP evaluation
+actually scores — functional capabilities, usability, workflow suitability, reporting, compliance —
+named out loud as the video moves through them. 756.6s (12.6 min): tight because it is the
+run sheet's own real click sequence at automation speed and real TTS pacing, not the run sheet's own
+45-minute *live-presenter* timing padded out to match.
+
+| Segment | Covers |
+|---|---|
+| 0 | Open, name the five criteria: SJIBL branding, light/dark theme, sign in as tenant-administrator |
+| 1 | Raise & approve a requisition (maker/checker, two real logins) |
+| 2 | Float a tender through its own approval graph |
+| 3 | Five tender methods on one bank: OTM, LTM, QM, DPM, two-stage |
+| 4 | Seeded bids: technical envelope opening, scoring by two evaluators, financial envelope, comparative statement |
+| 5 | Purchase proposal → purchase order → award, all three bidders notified at once |
+| 6 | The vendor/bidder portal, live and unassisted: self-signup, enlistment, staff approval, pseudonymous auction bidding |
+| 7 | The requisition dashboard report: filtered, run, exported |
+| 8 | The audit trail and its hash chain |
+| 9 | Scorecard against all five criteria |
+| 10 | Q&A |
+
+Every action in it is a real click against the live `shatadal` tenant, not staged: real personas
+(`farhan.kabir`, `rokeya.begum`, `nasrin.akter`, `shahidul.islam`, plus two freshly self-registered
+portal accounts, a vendor and a bidder), real requisition/tender/bid/award records, a real winning
+auction bid.
+
+**Five real product defects were found and fixed while producing it**, each confirmed live before
+the affected segment was recorded (or re-recorded):
+
+- **Segment 2**: the seal-custodian picker on `/proc/tender/float` refused every search, tenant-wide
+  — no two-envelope tender could ever have its envelopes opened by anyone.
+  Fixed `unistax/unistax@5d7b8cc95`.
+- **Segment 6 (vendor enlistment)**: the generic entity editor sent a checkbox field's value as JSON
+  where PostgreSQL's array columns need `{...}` syntax, refusing every save with a matching field.
+  Fixed `unistax/unistax@89ad7069c`.
+- **Segment 6 (document upload)**: the tenant's file store (`rustfs`) had been stuck for 36 hours on
+  an OpenShift-only security-context default that k3s refuses. Fixed `unistax/unistax@569f983aa`.
+- **Segment 7**: the report-run screen's own copy promised "download, and email me when ready," but
+  no download control existed for the small-answer case. Added `unistax/unistax@702f476f2`.
+- **Segment 6 (auction approval)**: `DisposalService.ApproveRegistration` was real and reachable but
+  had no screen calling it, so a bidder's registration could never actually be approved; the panel
+  added to close that gap then hit its own bug (`row_version` never requested by name, so every
+  approve attempt refused as "not loaded yet" forever). Both fixed `unistax/unistax@bd2ee7bc9`.
+
+A sixth, related hardening (not itself visible in this video, since no locked account is ever shown
+on screen): the seal-custodian picker's own fix above had dropped its `status = active` filter to
+close the refusal, which left a locked or suspended account still searchable. Closed properly at
+the shared read predicate rather than in the picker, `unistax/unistax@f25c7637e`.
+
 Each module has two videos: **user** (the day-to-day staff role that domain's RFP text describes) and
 **admin** (the tenant administrator). Module 24 is a separate application (`unistax/accounting`, not
 the monorepo) with only one seeded login, so both its videos share that login and differ by which
