@@ -75,6 +75,17 @@ on screen): the seal-custodian picker's own fix above had dropped its `status = 
 close the refusal, which left a locked or suspended account still searchable. Closed properly at
 the shared read predicate rather than in the picker, `unistax/unistax@f25c7637e`.
 
+**Segment 0 was re-recorded once, for a real cluster-configuration bug, not a code defect.** Every
+login in this video briefly showed a "404 page not found" right after sign-in, including the very
+first one at the start of Segment 0. Root cause: `shatadal-real-api`'s `UNISTAX_CASDOOR_CALLBACK_URL`
+pointed the OAuth callback at the bare API origin (`:8099`, which serves nothing at `/`) instead of
+the web origin (`:8098`), regardless of where the login itself started. Fixed on the live cluster
+(the callback URL and Casdoor's own registered redirect URI both repointed at `:8098`, which already
+proxies `/auth/casdoor/*` through to the API), verified with a real end-to-end login showing zero
+404s anywhere in the network trace. Segment 0 alone was re-recorded against the fixed cluster and
+re-spliced in; every other segment's content is unchanged, and the video's total runtime (756.6s) is
+identical to before.
+
 Each module has two videos: **user** (the day-to-day staff role that domain's RFP text describes) and
 **admin** (the tenant administrator). Module 24 is a separate application (`unistax/accounting`, not
 the monorepo) with only one seeded login, so both its videos share that login and differ by which
