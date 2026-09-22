@@ -42,6 +42,11 @@ run sheet's own real click sequence at automation speed and real TTS pacing, not
 | 9 | Scorecard against all five criteria |
 | 10 | Q&A |
 
+Segment 10's own Q&A is a live discussion, not scripted content; the written reference for it is
+`unistax/unistax`'s [`demo/sjibl/SJIBL-QA-BRIEF.md`](https://github.com/unistax/unistax/blob/master/demo/sjibl/SJIBL-QA-BRIEF.md) —
+20 questions SJIBL is likely to ask, grouped by the same five criteria, each answer sourced as
+either live-verified or an honest, named disclosure of what is not yet built.
+
 Every action in it is a real click against the live `shatadal` tenant, not staged: real personas
 (`farhan.kabir`, `rokeya.begum`, `nasrin.akter`, `shahidul.islam`, plus two freshly self-registered
 portal accounts, a vendor and a bidder), real requisition/tender/bid/award records, a real winning
